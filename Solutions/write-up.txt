@@ -1,0 +1,69 @@
+This file documents my approach on the different tasks:
+
+Task 1: Script for NGINX analysis
+
+Firstly, I browsed the first 5 logs manually to understand the structure of each log line in the shared nginx_access.log, and identified the pattern:
+- IP
+- Hyphen
+- HIT or BYPASS (cache status)
+- Timestamp
+- Domain
+- Request Method and HTTP version
+- Request size
+- Response size
+- Referrer information
+- User Agent (browser name and version)
+- Hyphen
+- Proxy IP
+- Country Code
+- Response Time
+- Upstream Connect Time
+- Upstream Header Time
+- Upstream Response Time
+- Upstream Cache Status
+
+So based on this initial analysis, and with the help of https://regexr.com/ I came up with a regex to parse the log files. I also saw some inconsistencies in the logs, where sometimes, some of the information was not present, for example the referrer. So I also wrote a fallback regex just to extract the necessary information, while keeping the remaining fields as they are, even if they don’t match the pattern.
+
+After this, the code was pretty straightforward, where I read the nginx_access.log file line by line, and did the computations as asked, for the top 5 IPs, error percentage, and the average response size
+
+Task 2:
+
+The task here was to identify all of the errors in the provided python_monitor.py. The first step was to run the buggy file to see any error outputs, where the first error was identified - status field was being parsed as ‘string’ instead of ‘integer’. Next I went for a line by line code analysis and identified these errors:
+- regex pattern incomplete, which I replaced with my regex logic from Task 1
+- handling logs that do not match the given regex, by using the fallback regex pattern
+- no sorting of the logs, meaning the 5 minute window counter may create multiple entries for same window
+- error rate being below 0, which was because of missing percentage conversion
+- potential division by zero, which was fixed by a simple if statement
+
+Task 3:
+
+For this task, I used AI to understand that for any given log line, what can be checked to identify if the request is malicious or not, as I was only aware of SQL injection, but no request body data was available in the logs. So from my research and help of AI, I understood that endpoints, or paths, user agents, response code can be analyzed for any given IP to determine whether it is legitimate or attempting to attack. Based on this, I wrote 5-6 simple bash commands using grep mostly, to identify malicious activity:
+- response code being >= 400, meaning the request is constantly getting rejected
+- request spam, with any IP sending over 1k request out of the total 7.2k
+- suspicious path, like .env or other secrets being tried to access
+- SQL injection, using keywords and symbols like — in the request
+- Mismatched and deprecated user agents
+- search engine impersonation, where the same IP is trying to request multiple domains
+
+Task 4:
+
+This task was to write some simple SQL commands to query the provided traffic.db. Firstly, I browsed the DB structure by running these commands:
+sqlite> .tables
+request_logs
+sqlite> .schema
+CREATE TABLE request_logs (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	timestamp TEXT,
+	ip_address TEXT,
+	status_code INTEGER,
+	response_time_ms INTEGER,
+	bytes_sent INTEGER
+);
+
+And then the required queries were written by simple SELECT, WHERE, GROUP BY statements, which were enough for the given problem.
+
+Task 5:
+
+Based on the output from Task 3, these two mitigation steps can be used:
+- Identify and block the IPs with >50% error responses
+- Identify and block the IPs using deprecated user agents
