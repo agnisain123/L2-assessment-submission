@@ -1,0 +1,57 @@
+Task 1
+-----------------------------------------------------
+Top 5 IP addresses by request count:
+  221.34.171.155: 383 requests
+  145.98.68.30: 380 requests
+  110.105.174.63: 361 requests
+  24.74.238.114: 355 requests
+  32.90.145.204: 354 requests
+
+Percentage of 4xx/5xx responses: 47.29%
+Average response size for GET requests: 751.8 bytes
+-----------------------------------------------------
+
+Task 3
+-----------------------------------------------------
+[+] Parsing Log File: nginx_access.log
+
+[!] IPs with High Error Rate (4xx/5xx > 50%)
+49.217.128.165 (65.9091%)
+49.17.221.77 (65.4286%)
+32.90.145.204 (66.6667%)
+24.74.238.114 (69.8592%)
+221.34.171.155 (63.7076%)
+188.230.178.192 (71.4286%)
+145.98.68.30 (63.4211%)
+110.105.174.63 (66.205%)
+
+[!] Aggressive IPs (over 1000 requests)
+
+[!] Suspicious Paths
+
+[!] Potential SQL Command Injection
+
+[!] Suspicious User Agents
+Chrome 23: 89
+Firefox 3: 183
+Chrome 14: 93
+Chrome 13: 109
+Chrome 40: 2850
+Firefox 16: 86
+Chrome 36: 87
+Firefox 23: 83
+-----------------------------------------------------
+
+Task 4
+-----------------------------------------------------
+hour_of_day  avg_response_time
+-----------  -----------------
+22           905.177514792899
+ip_address       request_count
+---------------  -------------
+119.103.226.136  358
+122.157.29.219   363
+total_bytes_sent
+----------------
+10719865
+-----------------------------------------------------
